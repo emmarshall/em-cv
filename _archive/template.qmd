@@ -1,0 +1,538 @@
+---
+title: "CV"
+author:
+  firstname: Emma
+  lastname: "W. Marshall"
+  address: "3303 Orchard Street Apt. A, Lincoln, NE 68503"
+  position: "Ph.D. Candidate in Social and Cognitive Psychology"
+  contacts:
+    - icon: fa envelope
+      text: emmarshall47@pm.me
+      url: "mailto:emmarshall47@pm.me"
+    - icon: fa phone
+      text: "(571) 594-2853"
+      url: "tel:+15715942853"
+    - icon: fa globe
+      text: emmawmarshall.com
+      url: "https://www.emmawmarshall.com"
+    #- icon: fa brands orcid
+    #  text: 0000-0001-7387-8875
+    #  url: "https://orcid.org/0000-0001-7387-8875"
+   # - icon: fa brands github
+   #   text: GitHub
+   #   url: "https://github.com/emmarshall"
+brand:
+  typography:
+    fonts:
+      - family: Sora
+        source: google
+        weight: [100, 400, 700]
+        style: [normal, italic]
+    base: Sora
+  color:
+    primary: "#d00000"
+    link: "#202b47"
+  defaults:
+    awesomecv-typst:
+      font-header: Sora
+format:
+  awesomecv-typst: default
+execute: 
+  echo: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(typstcv)
+library(tibble)
+library(dplyr)
+library(glue)
+library(stringr)
+library(purrr)
+
+# Vectorized helper function to create TYPST links
+link <- function(text, url) {
+  case_when(
+    is.na(url) | url == "" ~ as.character(text),
+    TRUE ~ as.character(glue('#link("{url}")[{text}]'))
+  )
+}
+
+# Vectorized helper for DOI links
+doi_link <- function(text, doi) {
+  case_when(
+    is.na(doi) | doi == "" ~ as.character(text),
+    TRUE ~ as.character(glue('#link("https://doi.org/{doi}")[{text}]'))
+  )
+}
+
+# Single icon link helper (vectorized)
+icon_link <- function(url, icon = "globe") {
+  case_when(
+    is.na(url) | url == "" ~ "",
+    TRUE ~ as.character(glue('#link("{url}")[#fa-icon("{icon}")]'))
+  )
+}
+
+# Combine multiple resource icons into a string
+build_icons <- function(website = "", pdf = "", slides = "", video = "", 
+                        osf = "", github = "", materials = "", data = "") {
+  icons <- character(0)
+  
+  if (!is.na(website) && website != "") {
+    icons <- c(icons, glue('#link("{website}")[#fa-icon("globe")]'))
+  }
+  if (!is.na(pdf) && pdf != "") {
+    icons <- c(icons, glue('#link("{pdf}")[#fa-icon("file-pdf")]'))
+  }
+  if (!is.na(slides) && slides != "") {
+    icons <- c(icons, glue('#link("{slides}")[#fa-icon("file-powerpoint")]'))
+  }
+  if (!is.na(video) && video != "") {
+    icons <- c(icons, glue('#link("{video}")[#fa-icon("video")]'))
+  }
+  if (!is.na(osf) && osf != "") {
+    icons <- c(icons, glue('#link("{osf}")[#fa-icon("osf", font: "Font Awesome 7 Brands")]'))
+  }
+  if (!is.na(github) && github != "") {
+    icons <- c(icons, glue('#link("{github}")[#fa-icon("github", font: "Font Awesome 7 Brands")]'))
+  }
+  if (!is.na(materials) && materials != "") {
+    icons <- c(icons, glue('#link("{materials}")[#fa-icon("folder-open")]'))
+  }
+  if (!is.na(data) && data != "") {
+    icons <- c(icons, glue('#link("{data}")[#fa-icon("database")]'))
+  }
+  
+  if (length(icons) == 0) return("")
+  paste(icons, collapse = " ")
+}
+
+# Helper to append icons to a title
+add_icons_to_title <- function(title, icons) {
+  case_when(
+    is.na(icons) | icons == "" ~ as.character(title),
+    TRUE ~ as.character(glue("{title} {icons}"))
+  )
+}
+
+# Helper to format author list with undergraduate mentees marked with dagger
+format_authors_with_mentees <- function(authors, mentees = character(0)) {
+  if (length(mentees) == 0 || all(is.na(mentees)) || all(mentees == "")) {
+    return(authors)
+  }
+  
+  # Split mentees if it's a comma-separated string
+  if (length(mentees) == 1 && grepl(",", mentees)) {
+    mentees <- trimws(unlist(strsplit(mentees, ",")))
+  }
+  
+  # Add dagger (†) before each mentee's name in the author string
+  # Use word boundaries to avoid partial matches
+  result <- authors
+  for (mentee in mentees) {
+    if (!is.na(mentee) && mentee != "") {
+      # Escape special regex characters in the mentee name
+      mentee_escaped <- str_replace_all(mentee, "([.\\[\\](){}|^$*+?\\\\])", "\\\\\\1")
+      # Only replace if it's a complete match (not part of another name)
+      result <- str_replace(result, paste0("(^|, |and )", mentee_escaped), paste0("\\1†", mentee))
+    }
+  }
+  result
+}
+```
+
+# Education
+```{r}
+#| label: education
+#| output: asis
+
+education <- tribble(
+  ~title, ~location, ~date, ~institution, ~thesis_type, ~thesis_title, ~url,
+  "Ph.D. in Social and Cognitive Psychology", "Lincoln, NE", "August 2026 (Expected)", "University of Nebraska-Lincoln", "Dissertation", "What to Suspect When They're Expecting: Abortion Ambiguity, Hindsight Bias, and Probable Cause Determinations in Pregnancy Loss Investigations After Dobbs", "",
+  "Juris Doctorate", "Lincoln, NE", "May 2022", "University of Nebraska-Lincoln", "Concentration", "Constitutional Law", "",
+  "M.A. in Social and Cognitive Psychology", "Lincoln, NE", "May 2022", "University of Nebraska-Lincoln", "Thesis", "Warrantless Searches, Hindsight Bias and Probable Cause", "",
+  "B.A. in Psychology", "Claremont, CA", "May 2014", "Pomona College, With Distinction", "Senior Thesis", "I got 99 Friends but the Police ain't One: Facebook, Privacy, and the Fourth Amendment", "https://www.pomona.edu"
+) |>
+  mutate(
+    institution_linked = link(institution, url),
+    description = case_when(
+      !is.na(thesis_type) & thesis_type != "" ~ glue("{institution_linked} #linebreak() *{thesis_type}:* {thesis_title}"),
+      TRUE ~ institution_linked
+    )
+  )
+
+education |>
+  resume_entry(
+    title = "title",
+    location = "location",
+    date = "date",
+    description = "description"
+  )
+```
+
+# Professional Experience
+```{r}
+#| label: professional-experience
+#| output: asis
+
+prof_exp <- tribble(
+  ~title, ~location, ~date, ~organization, ~description, ~url,
+  "Editorial Assistant, Court Review", "Lincoln, NE", "August 2022 - Present", "American Judges Association", "Manage manuscript workflow, perform copyediting, coordinate with authors and reviewers, and assist with publication layout for the quarterly journal serving the American judiciary", "https://www.americanjudgesassociation.org/court-review",
+  "Graduate Research Assistant", "Lincoln, NE", "May 2019 - May 2023", "The Center for Children, Families, and the Law", "Developed and evaluated training curricula for DCFS Child Protection and Safety New Worker Training; created educational materials and assessments for child welfare professionals", "https://ccfl.unl.edu",
+  "Graduate Research Assistant", "Lincoln, NE", "August 2016 - Present", "Law and Policy Lab, University of Nebraska-Lincoln", "Design and conduct experimental research on Fourth Amendment issues, consent searches, and privacy expectations; manage data collection and analysis; Principal Investigator: Eve M. Brank, J.D./Ph.D.", "https://lawpolicylab.unl.edu/",
+  "Lab Manager", "Claremont, CA", "May 2014 - August 2016", "Legal Decision-Making Research Lab, Scripps College", "Supervised undergraduate research assistants, managed IRB protocols and lab operations, coordinated multi-site data collection, and maintained research databases; Principal Investigator: Jennifer Groscup, J.D./Ph.D.", "https://www.scrippscollege.edu",
+) |>
+  mutate(
+    org_linked = link(organization, url),
+    description_full = glue("{org_linked} #linebreak() #v(3pt) #text(size: 0.9em, fill: luma(80))[{description}]")
+  )
+
+prof_exp |>
+  resume_entry(
+    title = "title",
+    location = "location",
+    date = "date",
+    description = "description_full"
+  )
+```
+
+```{=typst}
+#pagebreak()
+```
+
+# Teaching Experience
+```{r}
+#| label: teaching
+#| output: asis
+
+teaching <- tribble(
+  ~title, ~location, ~date, ~organization, ~course_num, ~students, ~format, ~website, ~syllabus,
+  "Teaching Assistant, Research Methods and Data Analysis", "Lincoln, NE", "Fall 2023 - Spring 2026", "University of Nebraska-Lincoln", "PSYC 350", "20-30 students", "In-person", "", "",
+  "Instructor, Introduction to Psychology", "Lincoln, NE", "Summer 2024", "University of Nebraska-Lincoln", "PSYC 181", "25-30 students", "Online", "", "",
+  "Instructor, Psychology of Social Behavior", "Lincoln, NE", "Summer 2019", "University of Nebraska-Lincoln", "PSYC 288", "15-20 students", "In-person", "", "",
+  "Co-Instructor, Law and Psychology", "Lincoln, NE", "Fall 2018", "University of Nebraska-Lincoln", "PSYC 463", "25-30 students", "In-person", "", "",
+  "Instructor, Law and Psychology", "Lincoln, NE", "Summer 2018", "University of Nebraska-Lincoln", "PSYC 463", "15-20 students", "Online", "", "",
+  "Teaching Assistant, Law and Psychology", "Lincoln, NE", "Spring 2018", "University of Nebraska-Lincoln", "PSYC 463", "25-30 students", "In-person", "", "",
+  "Teaching Assistant, Senior Thesis in Psychology", "Claremont, CA", "Fall 2015 - Spring 2016", "Scripps College", "PSYC 190", "10-15 students", "In-person", "", ""
+) |>
+  mutate(
+    # Build icons string
+    icons = pmap_chr(list(website, syllabus), \(website, syllabus) {
+      icons <- character(0)
+      if (!is.na(website) && website != "") {
+        icons <- c(icons, glue('#link("{website}")[#fa-icon("globe")]'))
+      }
+      if (!is.na(syllabus) && syllabus != "") {
+        icons <- c(icons, glue('#link("{syllabus}")[#fa-icon("file-pdf")]'))
+      }
+      if (length(icons) == 0) return("")
+      paste(icons, collapse = " ")
+    }),
+    # Add icons to title if present
+    title_with_icons = case_when(
+      icons != "" ~ glue("{title} {icons}"),
+      TRUE ~ title
+    ),
+    description = glue("{organization}, {course_num} #linebreak() {students}, {format}")
+  )
+
+teaching |>
+  resume_entry(
+    title = "title_with_icons",
+    location = "location",
+    date = "date",
+    description = "description"
+  )
+```
+
+
+# Selected Workshops and Guest Lectures
+```{r}
+#| label: workshops
+#| output: asis
+
+workshops <- tribble(
+~title, ~location, ~date, ~course, ~description, ~authors, ~mentees, ~website, ~slides,
+"Guest Lecturer: A.I. and Legal Decision Making", "Lincoln, NE", "Fall 2024, Spring 2025", "Law and Psychology, UNL", "Lecture on artificial intelligence applications in legal contexts and implications for legal decision-making research", "", "", "", "https://emmarshall.github.io/slides/talks/ai-guest-lecture-2025/#/title-slide",
+"Guest Lecturer: The Psychology and Law of Section 230", "Lincoln, NE", "Spring 2025", "Law and Psychology, UNL", "Lecture examining the psychological and legal implications of internet platform liability protections", "", "", "https://emmarshall.github.io/section230-psych/", "",
+"Workshop: Introduction to Jamovi", "Lincoln, NE", "Fall 2024, Fall 2025", "University of Nebraska-Lincoln", "Hands-on workshop introducing free statistical software for psychology research", "", "", "https://emmarshall.github.io/jamovi-workshop-lab/", "",
+"Workshop: Using Zotero for Psychology and Law Research", "Lincoln, NE", "Fall 2024, Fall 2025", "University of Nebraska-Lincoln", "Workshop on reference management and research organization for graduate students", "", "", "https://emmarshall.github.io/zotero-lab/", "",
+"Guest Lecturer: Judicial Decision-Making", "Lincoln, NE", "Spring 2023", "Law and Psychology, UNL", "Lecture on psychological factors influencing judicial decisions and courtroom processes", "", "", "", "https://emmarshall.github.io/slides/talks/judges-guest-lecture/#/title-slide",
+"Introduction to Expert Testimony: A Legal Workshop", "Denver, CO", "2022", "AP-LS Annual Meeting", "Student committee legal workshop providing foundational concepts for expert testimony in legal proceedings", "Fishel, S. and Marshall, E.", "", "http://www.apls-students.org/uploads/4/6/5/6/46564967/apls_2022_legal_primer_-_expert_witnesses.pdf", "http://www.apls-students.org/uploads/4/6/5/6/46564967/apls_2022_-_legal_seminar.pdf",
+"What is a Contract and Why Do I Care?: Exploring the Relationship between Psychology and Contract Law", "New Orleans, LA", "2020", "AP-LS Annual Meeting", "Student committee legal workshop providing an overview of contract law.", "Wertheimer, J., Marshall, E., and Hazen, K.", "", "", "http://www.apls-students.org/uploads/4/6/5/6/46564967/contracts_workshop__apls_2020_.pdf",
+"Guest Lecturer: Psychology and the Law in the American Legal System", "Bogota, Colombia", "Fall 2022", "Santo Tomas University", "International guest lecture introducing psychology-law research to Colombian law students", "", "", "", "",
+"What is Free Speech and Will I Know It When I See It?", "Portland, OR", "2019", "AP-LS Annual Meeting", "Student committee legal workshop covering basics of constitutional analysis for the law of free speech and obscenity", "Marshall, E., McCracken, E., Hazen, K.P., †Day, C., and †Danigole, E.", "yes", "", "http://www.apls-students.org/uploads/4/6/5/6/46564967/first_amendment_apls1.pdf",
+"Privacy and the Fourth Amendment", "Memphis, TN", "2018", "AP-LS Annual Meeting", "Student committee legal workshop covering basics of criminal procedure analysis for governmental searches and seizures", "Marshall, E., Haby, J., and Hazen, K.P.", "", "http://www.apls-students.org/uploads/4/6/5/6/46564967/fourth_amendment_primer_.pdf", "http://www.apls-students.org/uploads/4/6/5/6/46564967/fourth_amendment_workshop.pdf",
+"Guest Lecturer: Psychology of Jury Decision-Making", "Lincoln, NE", "Summer 2018", "Advanced Social Psychology, UNL", "Lecture on jury deliberation processes, biases, and decision-making research", "", "", "", ""
+) |>
+mutate(
+  # Bold your name in author strings
+  authors_bold = authors |>
+    str_replace("Marshall, E\\.,", "*Marshall, E.*,") |>
+    str_replace("Marshall, E\\.$", "*Marshall, E.*") |>
+    str_replace("Marshall, E\\. and", "*Marshall, E.* and") |>
+    str_replace(", Marshall, E\\.", ", *Marshall, E.*") |>
+    str_replace("^Marshall, E\\.", "*Marshall, E.*"),
+  # Build icons string
+  icons = pmap_chr(list(website, slides), \(website, slides) {
+    icons <- character(0)
+    if (!is.na(website) && website != "") {
+      icons <- c(icons, glue('#link("{website}")[#fa-icon("globe")]'))
+    }
+    if (!is.na(slides) && slides != "") {
+      icons <- c(icons, glue('#link("{slides}")[#fa-icon("file-powerpoint")]'))
+    }
+    if (length(icons) == 0) return("")
+    paste(icons, collapse = " ")
+  }),
+  # Add icons to title if present
+  title_with_icons = case_when(
+    icons != "" ~ glue("{title} {icons}"),
+    TRUE ~ title
+  ),
+  has_mentees = mentees != "",
+  has_authors = authors != "",
+  description_full = case_when(
+    has_authors & has_mentees ~ glue("{course} #linebreak() {authors_bold} #linebreak() {description} #linebreak() _†Undergraduate mentee_"),
+    has_authors ~ glue("{course} #linebreak() {authors_bold} #linebreak() {description}"),
+    TRUE ~ glue("{course} #linebreak() {description}")
+  )
+)
+
+workshops |>
+resume_entry(
+  title = "title_with_icons",
+  location = "location",
+  date = "date",
+  description = "description_full"
+)
+```
+
+# Publications
+```{r}
+#| label: publications
+#| output: asis
+
+publications <- tribble(
+  ~authors, ~year, ~title, ~source, ~doi, ~url,
+  "Brank, E. M., Groscup, J. L., Marshall, E. W., & Hoetger, L. A.", "2022", "Privacy rights and the law under the Fourth Amendment", "Routledge", "10.4324/9780367198459-REPRW130-1", "",
+  "Marshall, E. W., Groscup, J. L., Brank, E. M., Perez, A., & Hoetger, L. A.", "2019", "Police surveillance of cell phone location data: Supreme Court versus public opinion", "Behavioral Sciences & the Law, 37(6), 751–775", "10.1002/bsl.2436", "",
+  "Brank, E. M., Groscup, J. L., Marshall, E., & Hoetger, L.", "2019", "Sniffer-dog searchers in the United States", "Court Review, 55, 56–63", "", "https://digitalcommons.unl.edu/cgi/viewcontent.cgi?article=1690&context=ajacourtreview"
+) |>
+  mutate(
+    # Bold your name - check for E. W. first before E.
+    authors_bold = authors |>
+      str_replace("Marshall, E\\. W\\.", "*Marshall, E. W.*") |>
+      str_replace("Marshall, E\\.,", "*Marshall, E.*,") |>
+      str_replace("Marshall, E\\. &", "*Marshall, E.* &") |>
+      str_replace("Marshall, E\\.$", "*Marshall, E.*"),
+    title_linked = case_when(
+      !is.na(doi) & doi != "" ~ glue('#link("https://doi.org/{doi}")[{title}]'),
+      !is.na(url) & url != "" ~ glue('#link("{url}")[{title}]'),
+      TRUE ~ title
+    ),
+    description = glue("{authors_bold} #linebreak() {source}")
+  )
+
+publications |>
+  resume_entry(
+    title = "title_linked",
+    location = "",
+    date = "year",
+    description = "description"
+  )
+```
+
+# Manuscripts in Preparation and Under Review
+```{r}
+#| label: manuscripts
+#| output: asis
+
+manuscripts <- tribble(
+  ~authors, ~title, ~status, ~journal,
+  "Hoetger, L. A., Marshall, E. W., Groscup, J. L., & Brank, E. M.", "Bright Lights, Hot Nights, and Small Spaces: The Impact of Search Request Environment on Perceptions of Consent Searches", "Under review", "Law and Human Behavior",
+  "Hazen, K. P., Marshall, E. W., & Brank, E. M.", "One person, one vote: The role of the electoral college in voter abstention", "Under review", "Political Psychology",
+  "Groscup, J. L., Brank, E. M., Marshall, E., & Hoetger, L. A.", "Objectively and subjectively changing privacy rights: Does the NSA surveillance affect your 4th Amendment rights?", "In preparation", "",
+  "Marshall, E., & Groscup, J. L.", "I got 99 friends but the police ain't one: Facebook, privacy and the 4th Amendment", "In preparation", "",
+  "Marshall, E., Groscup, J. L., & Brank, E. M.", "I probably shouldn't say this on my work email but… Privacy expectations for electronic communications in a work situation", "In preparation", "",
+  "Brank, E. M., Marshall, E., & Groscup, J. L.", "Call me maybe, but not on my smartphone: Privacy expectations for searches of cell phones", "In preparation", ""
+) |>
+  mutate(
+    # Bold your name - check for E. W. first before E.
+    authors_bold = authors |>
+      str_replace("Marshall, E\\. W\\.", "*Marshall, E. W.*") |>
+      str_replace("Marshall, E\\.,", "*Marshall, E.*,") |>
+      str_replace("Marshall, E\\. &", "*Marshall, E.* &") |>
+      str_replace("Marshall, E\\.$", "*Marshall, E.*"),
+    date = case_when(
+      status == "Under review" & journal != "" ~ "Under review",
+      status == "Under review" ~ "Under review",
+      TRUE ~ "In preparation"
+    ),
+    description = case_when(
+      journal != "" ~ glue("{authors_bold} #linebreak() {journal}"),
+      TRUE ~ authors_bold
+    )
+  )
+
+manuscripts |>
+  resume_entry(
+    title = "title",
+    location = "",
+    date = "date",
+    description = "description"
+  )
+```
+
+# Presentations
+```{r}
+#| label: presentations
+#| output: asis
+
+presentations <- tribble(
+  ~title, ~type, ~conference, ~city, ~date, ~authors, ~mentees,
+  "When Suffrage Becomes Suffering: How the Electoral College Affects Emotions", "Paper", "Law and Society Annual Meeting", "Chicago, IL", "2025", "Marshall, E., Hazen, K.P., and Brank, E.M.", "",
+  "When Suffrage Becomes Suffering: How the Electoral College Affects Emotions", "Paper", "American Psychology-Law Society Annual Meeting", "San Juan, PR", "2025", "Marshall, E., Hazen, K.P., and Brank, E.M.", "",
+  "One person, NO vote: The role of the Electoral College in voter abstention", "Poster", "71st Annual Nebraska Symposium on Motivation", "Lincoln, NE", "2024", "Marshall, E., Hazen, K.P., Sircy, K., and Brank, E.M.", "",
+  "Search and Reflect: How Unexpected Outcomes Shape Hindsight Bias and Probable Cause", "Paper", "American Psychology-Law Society Annual Meeting", "Los Angeles, CA", "2024", "Marshall, E., Brank, E.M., and Groscup, J.L.", "",
+  "An archival analysis of Massachusetts' census data and police department search and seizure policies", "Poster", "American Psychology-Law Society Annual Meeting", "Los Angeles, CA", "2024", "Yanelli Guzman, Y., Hazen, K.P., Marshall, E., Groscup, J.L., and Brank, E.M.", "",
+  "Reforming virtual child pornography: Insights from dehumanization and international human rights law", "Paper", "American Psychology-Law Society Annual Meeting", "Denver, CO", "2022", "McCracken, E. W. and Marshall, E.", "",
+  "I trust; therefore, I am free: An examination of institutional trust and consent to search", "Symposium", "American Psychology-Law Society Annual Meeting", "New Orleans, LA", "2020", "Hazen, K., Marshall, E., Groscup, J., and Brank, E.", "",
+  "Voice, legitimacy, and consent search requests: Evaluations of police-civilian interactions", "Symposium", "American Society of Criminology (Cancelled)", "Washington, DC", "2020", "Hazen, K., Marshall, E., Groscup, J., and Brank, E.", "",
+  "The impact of Social Support and the Number of Searchers on Perceptions of Consent Searches", "Poster", "American Psychology-Law Society Annual Meeting", "New Orleans, LA", "2020", "†Wilson, K., †Day, C., †Budell, A., Marshall, E., Groscup, J.L., and Brank, E.M.", "yes",
+  "The impact of Social Support and the Number of Searchers on Perceptions of Consent", "Poster", "UNL Undergraduate Research Fair", "Lincoln, NE", "2020", "†Wilson, K., Marshall, E., Groscup, J.L., and Brank, E.M.", "yes",
+  "One Person, One Vote: The Role of the Electoral College in Vote Abstention", "Poster", "Society for Personality and Social Psychology", "Portland, OR", "2019", "Hazen, K., Marshall, E., Groscup, J., and Brank, E.", "",
+  "To Consent or not to Consent: Trust in Police and Knowledge of the Fourth Amendment", "Poster", "American Psychology-Law Society Annual Meeting", "Portland, OR", "2019", "†Buhr, T.G., †Danigole, E., †Day, C., †Buck, T., Marshall, E., Hazen, K.P., Groscup, J.L., and Brank, E.M.", "yes",
+  "I've Got Nothing to Hide: The Effect of Innocence on Consenting to Searches", "Paper", "American Psychology-Law Society Annual Meeting", "Portland, OR", "2019", "Marshall, E., Brank, E.M., and Groscup, J.L.", "",
+  "Perceptions of Smartphone App Data Security", "Paper", "APA Technology, Mind, and Society", "Washington, DC", "2018", "Brank, E.M., Yan, Q., Marshall, E., and Groscup, J.L.", "",
+  "Talk sweet to me and I'll gladly say yes: The effect of warnings, physical positioning, and proximity to property on consents to search", "Paper", "American Psychology-Law Society Annual Meeting", "Memphis, TN", "2018", "Groscup, J.L., Brank, E.M., Marshall, E., Farris M., Au, K., and Kaiser, R.", "",
+  "Touch me, touch me not: How physical distance impacts voluntary consents to search requests", "Paper", "American Psychology-Law Society Annual Meeting", "Memphis, TN", "2018", "Brank, E.M., Groscup, J.L., Marshall, E., and Haby, J.", "",
+  "The more things change, the more they stay the same: Expectations of privacy and consenting to searches of technology in a Post-Snowden world", "Paper", "American Psychology-Law Society Annual Meeting", "Memphis, TN", "2018", "Marshall, E., Groscup, J.L., Hoetger, L.A., and Brank, E.M.", "",
+  "The Effect of timing and Added Delay on Perceptions of K-9 Sniffs and Drug-Related Questions at a Traffic Stop", "Paper", "American Psychology-Law Society Annual Meeting", "Seattle, WA", "2017", "Marshall, E., Groscup, J.L., Hazen, K.P., and Brank, E.M.", "",
+  "When the Police Come Knocking: Search Request Responses and Perceptions", "Poster", "UNL Undergraduate Research Fair", "Lincoln, NE", "2017", "†McGarry, P., †Epp, M., †Haby, J., Marshall, E., and Brank, E.M.", "yes",
+  "Bright Lights, Hot Nights, and Small Spaces: The Impact of the Search Request Environment on Perceptions of Consent Searches", "Paper", "American Psychology-Law Society Annual Meeting", "Atlanta, GA", "2016", "Marshall, E., Groscup, J.L., and Brank, E.M.", "",
+  "Privacy Expectations for Electronic Communications on Facebook", "Poster", "American Psychological Association", "Toronto, Canada", "2015", "Marshall, E., Fiske, Z., Tsao, E., Beazley, M., and Groscup, J.L.", "",
+  "Expectations of Privacy on Cloud Storage Devices and the Fourth Amendment", "Poster", "American Psychological Association", "Toronto, Canada", "2015", "Marshall, E., Roizen, E., Brown, G., Bao, K., and Groscup, J.L.", "",
+  "I Got 99 Friends But the Police Ain't One: Facebook, Privacy and the 4th Amendment", "Paper", "American Psychology-Law Society Annual Meeting", "San Diego, CA", "2015", "Marshall, E., and Groscup, J.L.", "",
+  "Experiences with Police Searches: No Doesn't Always Mean No", "Paper", "American Psychology-Law Society Annual Meeting", "San Diego, CA", "2015", "Marshall, E., Groscup, J.L., Brank, E.M., Rivera, A., and Roizen, E.", "",
+  "I Don't Know Much, but I Know I Don't Trust You: Knowledge of 4th Amendment Rights and Reactions to Police Requests to Search", "Paper", "American Psychology-Law Society Annual Meeting", "San Diego, CA", "2015", "Caldwell, K., Brank, E.M., Groscup, J.L, and Marshall, E.", "",
+  "Low Expectations Are the Key to Valid Searches: How the NSA Leaks May Have Changed Your 4th Amendment Rights", "Paper", "American Psychology-Law Society Annual Meeting", "San Diego, CA", "2015", "Groscup, J.L., Brank, E.M., Marshall, E., and Hoetger, L.A.", "",
+  "Call Me Maybe, but not on my Smartphone: Privacy Expectations for Searches of Cell Phones", "Poster", "American Psychology-Law Society Annual Meeting", "San Diego, CA", "2015", "Marshall, E., Brikmanis, K., and Groscup, J.L.", "",
+  "Perceptions of Police Searches with Race Manipulation", "Poster", "American Psychology-Law Society Annual Meeting", "San Diego, CA", "2015", "Gold, R., Marshall, E., Groscup, J.L., and Ma, J.", "",
+  "I probably shouldn't say this on my work email but... privacy expectations for electronic communications in a work situation", "Paper", "American Psychology-Law Society Annual Meeting", "New Orleans, LA", "2014", "Marshall, E., Groscup, J.L., and Brank, E.M.", "",
+  "Search and seizure: Privacy expectations for electronic activity on personal and work devices", "Paper", "American Psychology-Law Society Annual Meeting", "New Orleans, LA", "2014", "Deo, I., Diebel, E., Sachs, L., Tsao, E., Marshall, E., Brank, E.M, and Groscup, J.L.", ""
+) |>
+  mutate(
+    # Bold your name - check for E. W. first before E.
+    authors_bold = authors |>
+      str_replace("Marshall, E\\. W\\.", "*Marshall, E. W.*") |>
+      str_replace("Marshall, E\\.,", "*Marshall, E.*,") |>
+      str_replace("Marshall, E\\. and", "*Marshall, E.* and") |>
+      str_replace("Marshall, E\\. &", "*Marshall, E.* &") |>
+      str_replace("Marshall, E\\.$", "*Marshall, E.*") |>
+      str_replace(", Marshall, E\\.", ", *Marshall, E.*"),
+    has_mentees = mentees != "",
+    description = case_when(
+      has_mentees ~ glue("{conference} #linebreak() {authors_bold} ({type}) #linebreak() †Undergraduate mentee"),
+      TRUE ~ glue("{conference} #linebreak() {authors_bold} ({type})")
+    )
+  )
+
+presentations |>
+  resume_entry(
+    title = "title",
+    location = "city",
+    date = "date",
+    description = "description"
+  )
+```
+
+# Professional Service
+```{r}
+#| label: service
+#| output: asis
+
+service <- tribble(
+  ~title, ~organization, ~location, ~date, ~url,
+  "Student Member, Early Career Professionals Committee", "American Psychology-Law Society", "", "2023 - 2025", "https://www.apadivisions.org/division-41",
+  "Past-Chair, Student Committee", "American Psychology-Law Society", "", "2021 - 2022", "https://www.apadivisions.org/division-41",
+  "Chair, Online Poster Session", "American Psychology-Law Society", "", "2021", "",
+  "Chair, Student Committee", "American Psychology-Law Society", "", "2020 - 2021", "https://www.apadivisions.org/division-41",
+  "Chair-Elect, Student Committee", "American Psychology-Law Society", "", "2019 - 2020", "https://www.apadivisions.org/division-41",
+  "Student Reviewer", "Law and Human Behavior", "", "2022 - 2025", "https://www.apa.org/pubs/journals/lhb",
+  "Student Web Editor", "American Psychology-Law Society", "", "2019 - Present", "https://www.apadivisions.org/division-41",
+  "Law-Psychology Representative", "UNL Graduate Student Assembly", "Lincoln, NE", "2018 - 2019", "",
+  "Student Reviewer, Annual Meeting", "American Psychology-Law Society", "", "2018 - 2026", "",
+  "Law Liaison, Student Committee", "American Psychology-Law Society", "", "2017 - 2019", "https://www.apadivisions.org/division-41",
+  "Board Member", "Pomona College Alumni Association", "Claremont, CA", "2014 - 2017", "https://www.pomona.edu/alumni",
+  "Senior Class President", "Associated Students of Pomona College", "Claremont, CA", "2013 - 2014", "",
+  "President and Co-Founder", "Title IX Student Coalition, Pomona College", "Claremont, CA", "2013 - 2014", ""
+) |>
+  mutate(
+    org_linked = link(organization, url)
+  )
+
+service |>
+  resume_entry(
+    title = "title",
+    location = "location",
+    date = "date",
+    description = "org_linked"
+  )
+```
+
+# Professional Memberships
+```{r}
+#| label: memberships
+#| output: asis
+
+memberships <- tribble(
+  ~title, ~location, ~date, ~description, ~url,
+  "Law & Society Association", "", "2024-Present", "Student Member", "https://www.lawandsociety.org/",
+  "Society for the Teaching of Psychology", "", "2024- Present", "Student Member", "https://teachpsych.org/", 
+  "American Psychology-Law Society", "", "2012 - Present", "Student Member", "https://www.ap-ls.org",
+  "American Psychology Association", "", "2014 - Present", "Student Member", "https://www.apa.org"
+) |>
+  mutate(
+    title = link(title, url)
+  )
+
+memberships |>
+  resume_entry(
+    title = "title",
+    location = "location",
+    date = "date",
+    description = "description"
+  )
+```
+
+# Professional Honors and Awards
+```{r}
+#| label: awards
+#| output: asis
+
+awards <- tribble(
+  ~title, ~organization, ~location, ~date, ~description,
+  "CALI Excellence for the Future Award, Family Law", "University of Nebraska College of Law", "Lincoln, NE", "2019", "",
+  "CALI Excellence for the Future Award, Juvenile Law", "University of Nebraska College of Law", "Lincoln, NE", "2019", "",
+  "CALI Excellence for the Future Award, Legal Profession", "University of Nebraska College of Law", "Lincoln, NE", "2019", "",
+  "Conference Student Travel Award", "AP-LS, APA Division 41", "", "2015", "",
+  "Distinction in the Senior Thesis Exercise", "Pomona College Psychology Department", "Claremont, CA", "2014", "",
+  "Senior Service Award", "Pomona College", "Claremont, CA", "2014", "",
+  "Student Travel Grant", "Pomona College Psychology Department", "Claremont, CA", "2014", "",
+  "Pomona College Scholar", "Pomona College", "Claremont, CA", "2012 - 2014", ""
+)
+
+awards |>
+  resume_entry(
+    title = "title",
+    location = "location",
+    date = "date",
+    description = "organization"
+  )
+```
+
+

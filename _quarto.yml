@@ -1,0 +1,4 @@
+project:
+  type: website
+  title: Emma W. Marshall's CV
+  output-dir: docs

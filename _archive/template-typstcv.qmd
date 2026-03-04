@@ -1,0 +1,401 @@
+---
+title: "CV"
+author:
+  firstname: Emma
+  lastname: "W. Marshall"
+  address: "3303 Orchard Street Apt. A, Lincoln, NE 68503"
+  position: "Ph.D. Candidate in Social and Cognitive Psychology"
+  contacts:
+    - icon: fa envelope
+      text: emmarshall47@pm.me
+      url: "mailto:emmarshall47@pm.me"
+    - icon: fa phone
+      text: "(571) 594-2853"
+      url: "tel:+15715942853"
+    - icon: fa globe
+      text: emmawmarshall.com
+      url: "https://www.emmawmarshall.com"
+brand:
+  typography:
+    fonts:
+      - family: Sora
+        source: google
+        weight: [100, 400, 700]
+        style: [normal]
+      - family: IBM Plex Sans
+        source: google
+        weight: [100, 400, 700]
+        style: [normal, italic]
+    base: IBM Plex Sans
+  color:
+    primary: "#d00000"
+    #primary: "#ff6361"
+    link: "#202b47"
+  defaults:
+    awesomecv-typst:
+      font-header: Sora
+format:
+  awesomecv-typst: default
+bibliography: cv-references.bib
+csl: apa-cv.csl
+highlight-author: "Marshall, E. W."
+suppress-bibliography: true
+execute: 
+  echo: false
+---
+```{r}
+#| label: setup
+#| include: false
+
+library(typstcv)
+library(tibble)
+library(dplyr)
+library(glue)
+library(stringr)
+library(purrr)
+
+link <- function(text, url) {
+  case_when(
+    is.na(url) | url == "" ~ as.character(text),
+    TRUE ~ as.character(glue('#link("{url}")[{text}]'))
+  )
+}
+```
+
+# Education
+```{r}
+#| label: education
+#| output: asis
+
+education <- tribble(
+  ~title, ~location, ~date, ~institution, ~thesis_type, ~thesis_title, ~url,
+  "Ph.D. in Social and Cognitive Psychology", "Lincoln, NE", "August 2026 (Expected)", "University of Nebraska-Lincoln", "Dissertation", "What to Suspect When They're Expecting: Abortion Ambiguity, Hindsight Bias, and Probable Cause Determinations in Pregnancy Loss Investigations After Dobbs", "",
+  "Juris Doctorate", "Lincoln, NE", "May 2022", "University of Nebraska-Lincoln", "Concentration", "Constitutional Law", "",
+  "M.A. in Social and Cognitive Psychology", "Lincoln, NE", "May 2022", "University of Nebraska-Lincoln", "Thesis", "Warrantless Searches, Hindsight Bias and Probable Cause", "",
+  "B.A. in Psychology", "Claremont, CA", "May 2014", "Pomona College, With Distinction", "Senior Thesis", "I got 99 Friends but the Police ain't One: Facebook, Privacy, and the Fourth Amendment", "https://www.pomona.edu"
+) |>
+  mutate(
+    institution_linked = link(institution, url),
+    description = case_when(
+      !is.na(thesis_type) & thesis_type != "" ~ glue("{institution_linked} #linebreak() *{thesis_type}:* {thesis_title}"),
+      TRUE ~ institution_linked
+    )
+  )
+
+education |>
+  resume_entry(
+    title = "title",
+    location = "location",
+    date = "date",
+    description = "description"
+  )
+```
+
+# Professional Experience
+```{r}
+#| label: professional-experience
+#| output: asis
+
+prof_exp <- tribble(
+  ~title, ~location, ~date, ~organization, ~description, ~url,
+  "Editorial Assistant, Court Review", "Lincoln, NE", "August 2022 - Present", "American Judges Association", "Manage manuscript workflow, perform copyediting, coordinate with authors and reviewers, and assist with publication layout for the quarterly journal serving the American judiciary", "https://www.americanjudgesassociation.org/court-review",
+  "Graduate Research Assistant", "Lincoln, NE", "May 2019 - May 2023", "The Center for Children, Families, and the Law", "Developed and evaluated training curricula for DCFS Child Protection and Safety New Worker Training; created educational materials and assessments for child welfare professionals", "https://ccfl.unl.edu",
+  "Graduate Research Assistant", "Lincoln, NE", "August 2016 - Present", "Law and Policy Lab, University of Nebraska-Lincoln", "Design and conduct experimental research on Fourth Amendment issues, consent searches, and privacy expectations; supermanage data collection and analysis; Principal Investigator: Eve M. Brank, JD/PhD", "https://lawpolicylab.unl.edu/",
+  "Lab Manager", "Claremont, CA", "May 2014 - August 2016", "Legal Decision-Making Research Lab, Scripps College", "Supervised undergraduate research assistants, managed IRB protocols and lab operations, coordinated multi-site data collection, and maintained research databases; Principal Investigator: Jennifer Groscup, J.D./Ph.D.", "https://www.scrippscollege.edu",
+  "Undergraduate Research Assistant", "Claremont, CA", "August 2012 - May 2014", "Legal Decision-Making Research Lab, Scripps College", "Conducted participant recruitment and data collection, performed behavioral coding, completed systematic literature reviews, and assisted with manuscript preparation; Principal Investigator: Jennifer Groscup, JD/PhD", ""
+) |>
+  mutate(
+    org_linked = link(organization, url),
+    description_full = glue("{org_linked} #linebreak() #v(3pt) #text(size: 0.9em, fill: luma(80))[{description}]")
+  )
+
+prof_exp |>
+  resume_entry(
+    title = "title",
+    location = "location",
+    date = "date",
+    description = "description_full"
+  )
+```
+
+```{=typst}
+#pagebreak()
+```
+
+# Teaching Experience
+```{r}
+#| label: teaching
+#| output: asis
+
+teaching <- tribble(
+  ~title, ~location, ~date, ~organization, ~course_num, ~students, ~format, ~website, ~syllabus,
+  "Teaching Assistant, Research Methods and Data Analysis", "Lincoln, NE", "Fall 2023 - Spring 2026", "University of Nebraska-Lincoln", "PSYC 350", "20-30 students", "In-person", "", "",
+  "Instructor, Introduction to Psychology", "Lincoln, NE", "Summer 2024", "University of Nebraska-Lincoln", "PSYC 181", "25-30 students", "Online", "", "",
+  "Instructor, Psychology of Social Behavior", "Lincoln, NE", "Summer 2019", "University of Nebraska-Lincoln", "PSYC 288", "15-20 students", "In-person", "", "",
+  "Co-Instructor, Law and Psychology", "Lincoln, NE", "Fall 2018", "University of Nebraska-Lincoln", "PSYC 463", "25-30 students", "In-person", "", "",
+  "Instructor, Law and Psychology", "Lincoln, NE", "Summer 2018", "University of Nebraska-Lincoln", "PSYC 463", "15-20 students", "Online", "", "",
+  "Teaching Assistant, Law and Psychology", "Lincoln, NE", "Spring 2018", "University of Nebraska-Lincoln", "PSYC 463", "25-30 students", "In-person", "", "",
+  "Teaching Assistant, Senior Thesis in Psychology", "Claremont, CA", "Fall 2015 - Spring 2016", "Scripps College", "PSYC 190", "10-15 students", "In-person", "", ""
+) |>
+  mutate(
+    icons = pmap_chr(list(website, syllabus), \(website, syllabus) {
+      icons <- character(0)
+      if (!is.na(website) && website != "") {
+        icons <- c(icons, glue('#link("{website}")[#fa-icon("globe")]'))
+      }
+      if (!is.na(syllabus) && syllabus != "") {
+        icons <- c(icons, glue('#link("{syllabus}")[#fa-icon("file-pdf")]'))
+      }
+      if (length(icons) == 0) return("")
+      paste(icons, collapse = " ")
+    }),
+    title_with_icons = case_when(
+      icons != "" ~ glue("{title} {icons}"),
+      TRUE ~ title
+    ),
+    description = glue("{organization}, {course_num} #linebreak() {students}, {format}")
+  )
+
+teaching |>
+  resume_entry(
+    title = "title_with_icons",
+    location = "location",
+    date = "date",
+    description = "description"
+  )
+```
+
+# Selected Workshops and Guest Lectures
+```{r}
+#| label: workshops
+#| output: asis
+
+workshops <- tribble(
+  ~title, ~location, ~date, ~course, ~authors, ~mentees, ~website, ~slides,
+  "Guest Lecturer: A.I. and Legal Decision Making", "Lincoln, NE", "Fall 2024, Spring 2025", "Law and Psychology, UNL", "", "", "", "https://emmarshall.github.io/slides/talks/ai-guest-lecture-2025/#/title-slide",
+  "Guest Lecturer: The Psychology and Law of Section 230", "Lincoln, NE", "Spring 2025", "Law and Psychology, UNL", "", "", "https://emmarshall.github.io/section230-psych/", "",
+  "Workshop: Introduction to Jamovi", "Lincoln, NE", "Fall 2024, Fall 2025", "University of Nebraska-Lincoln", "", "", "https://emmarshall.github.io/jamovi-workshop-lab/", "",
+  "Workshop: Using Zotero for Psychology and Law Research", "Lincoln, NE", "Fall 2024, Fall 2025", "University of Nebraska-Lincoln", "", "", "https://emmarshall.github.io/zotero-lab/", "",
+  "Guest Lecturer: Judicial Decision-Making", "Lincoln, NE", "Spring 2023", "Law and Psychology, UNL", "", "", "", "https://emmarshall.github.io/slides/talks/judges-guest-lecture/#/title-slide",
+  "Introduction to Expert Testimony: A Legal Workshop", "Denver, CO", "2022", "AP-LS Annual Meeting", "Fishel, S. and Marshall, E.", "", "http://www.apls-students.org/uploads/4/6/5/6/46564967/apls_2022_legal_primer_-_expert_witnesses.pdf", "http://www.apls-students.org/uploads/4/6/5/6/46564967/apls_2022_-_legal_seminar.pdf",
+  "What is a Contract and Why Do I Care?: Exploring the Relationship between Psychology and Contract Law", "New Orleans, LA", "2020", "AP-LS Annual Meeting", "Wertheimer, J., Marshall, E., and Hazen, K.", "", "", "http://www.apls-students.org/uploads/4/6/5/6/46564967/contracts_workshop__apls_2020_.pdf",
+  "Guest Lecturer: Psychology and the Law in the American Legal System", "Bogota, Colombia", "Fall 2022", "Santo Tomas University", "", "", "", "",
+  "What is Free Speech and Will I Know It When I See It?", "Portland, OR", "2019", "AP-LS Annual Meeting", "Marshall, E., McCracken, E., Hazen, K.P., †Day, C., and †Danigole, E.", "yes", "", "http://www.apls-students.org/uploads/4/6/5/6/46564967/first_amendment_apls1.pdf",
+  "Privacy and the Fourth Amendment", "Memphis, TN", "2018", "AP-LS Annual Meeting", "Marshall, E., Haby, J., and Hazen, K.P.", "", "http://www.apls-students.org/uploads/4/6/5/6/46564967/fourth_amendment_primer_.pdf", "http://www.apls-students.org/uploads/4/6/5/6/46564967/fourth_amendment_workshop.pdf",
+  "Guest Lecturer: Psychology of Jury Decision-Making", "Lincoln, NE", "Summer 2018", "Advanced Social Psychology, UNL", "", "", "", ""
+) |>
+  mutate(
+    authors_bold = authors |>
+      str_replace("Marshall, E\\.,", "*Marshall, E.*,") |>
+      str_replace("Marshall, E\\.$", "*Marshall, E.*") |>
+      str_replace("Marshall, E\\. and", "*Marshall, E.* and") |>
+      str_replace(", Marshall, E\\.", ", *Marshall, E.*") |>
+      str_replace("^Marshall, E\\.", "*Marshall, E.*"),
+    icons = pmap_chr(list(website, slides), \(website, slides) {
+      icons <- character(0)
+      if (!is.na(website) && website != "") {
+        icons <- c(icons, glue('#link("{website}")[#fa-icon("globe")]'))
+      }
+      if (!is.na(slides) && slides != "") {
+        icons <- c(icons, glue('#link("{slides}")[#fa-icon("file-powerpoint")]'))
+      }
+      if (length(icons) == 0) return("")
+      paste(icons, collapse = " ")
+    }),
+    title_with_icons = case_when(
+      icons != "" ~ glue("{title} {icons}"),
+      TRUE ~ title
+    ),
+    has_mentees = mentees != "",
+    has_authors = authors != "",
+    description_full = case_when(
+      has_authors & has_mentees ~ glue("{course} #linebreak() {authors_bold} #linebreak() _†Undergraduate mentee_"),
+      has_authors ~ glue("{course} #linebreak() {authors_bold}"),
+      TRUE ~ course
+    )
+  )
+
+workshops |>
+  resume_entry(
+    title = "title_with_icons",
+    location = "location",
+    date = "date",
+    description = "description_full"
+  )
+```
+
+# Publications
+
+::: {.apa-bib}
+[@brank2022privacy]
+
+[@marshall2019police]
+
+[@brank2019sniffer]
+:::
+
+# Manuscripts in Preparation and Under Review
+::: {.apa-bib}
+
+[@hoetger2025bright]
+
+[@hazen2025oneperson]
+
+[@groscup2025objectively]
+
+[@marshall2025igot99]
+
+[@marshall2025workemail]
+
+[@brank2025callme]
+:::
+
+# Presentations
+::: {.apa-bib mentee-note="true"}
+
+[@marshall2025suffrage_lsa]
+
+[@marshall2025suffrage_apls]
+
+[@marshall2024electoral]
+
+[@marshall2024hindsight]
+
+[@guzman2024archival]
+
+[@mccracken2022reforming]
+
+[@hazen2020trust]
+
+[@hazen2020voice]
+
+[@wilson2020socialsupport]
+
+[@wilson2020socialsupport_unl]
+
+[@hazen2019electoral]
+
+[@buhr2019consent]
+
+[@marshall2019innocence]
+
+[@brank2018smartphone]
+
+[@groscup2018talksweet]
+
+[@brank2018touchme]
+
+[@marshall2018postsnowden]
+
+[@marshall2017k9]
+
+[@mcgarry2017knocking]
+
+[@marshall2016brightlights]
+
+[@marshall2015facebook_apa]
+
+[@marshall2015cloud]
+
+[@marshall2015facebook_apls]
+
+[@marshall2015experiences]
+
+[@caldwell2015knowledge]
+
+[@groscup2015nsa]
+
+[@marshall2015smartphone]
+
+[@gold2015race]
+
+[@marshall2014workemail]
+
+[@deo2014searchseizure]
+
+:::
+
+# Professional Service
+```{r}
+#| label: service
+#| output: asis
+
+service <- tribble(
+  ~title, ~organization, ~location, ~date, ~url,
+  "Student Member, Early Career Professionals Committee", "American Psychology-Law Society", "", "2023 - 2025", "https://www.apadivisions.org/division-41",
+  "Past-Chair, Student Committee", "American Psychology-Law Society", "", "2021 - 2022", "https://www.apadivisions.org/division-41",
+  "Chair, Online Poster Session", "American Psychology-Law Society", "", "2021", "",
+  "Chair, Student Committee", "American Psychology-Law Society", "", "2020 - 2021", "https://www.apadivisions.org/division-41",
+  "Chair-Elect, Student Committee", "American Psychology-Law Society", "", "2019 - 2020", "https://www.apadivisions.org/division-41",
+  "Student Reviewer", "Law and Human Behavior", "", "2022 - 2025", "https://www.apa.org/pubs/journals/lhb",
+  "Student Web Editor", "American Psychology-Law Society", "", "2019 - Present", "https://www.apadivisions.org/division-41",
+  "Law-Psychology Representative", "UNL Graduate Student Assembly", "Lincoln, NE", "2018 - 2019", "",
+  "Student Reviewer, Annual Meeting", "American Psychology-Law Society", "", "2018 - 2026", "",
+  "Law Liaison, Student Committee", "American Psychology-Law Society", "", "2017 - 2019", "https://www.apadivisions.org/division-41",
+  "Board Member", "Pomona College Alumni Association", "Claremont, CA", "2014 - 2017", "https://www.pomona.edu/alumni",
+  "Senior Class President", "Associated Students of Pomona College", "Claremont, CA", "2013 - 2014", "",
+  "President and Co-Founder", "Title IX Student Coalition, Pomona College", "Claremont, CA", "2013 - 2014", ""
+) |>
+  mutate(
+    org_linked = link(organization, url)
+  )
+
+service |>
+  resume_entry(
+    title = "title",
+    location = "location",
+    date = "date",
+    description = "org_linked"
+  )
+```
+
+# Professional Memberships
+```{r}
+#| label: memberships
+#| output: asis
+
+memberships <- tribble(
+  ~title, ~location, ~date, ~description, ~url,
+  "Law & Society Association", "", "2024 - Present", "Student Member", "https://www.lawandsociety.org/",
+  "Society for the Teaching of Psychology", "", "2024 - Present", "Student Member", "https://teachpsych.org/", 
+  "American Psychology-Law Society", "", "2012 - Present", "Student Member", "https://www.ap-ls.org",
+  "American Psychological Association", "", "2014 - Present", "Student Member", "https://www.apa.org"
+) |>
+  mutate(
+    title = link(title, url)
+  )
+
+memberships |>
+  resume_entry(
+    title = "title",
+    location = "location",
+    date = "date",
+    description = "description"
+  )
+```
+
+# Professional Honors and Awards
+```{r}
+#| label: awards
+#| output: asis
+
+awards <- tribble(
+  ~title, ~organization, ~location, ~date,
+  "CALI Excellence for the Future Award, Family Law", "University of Nebraska College of Law", "Lincoln, NE", "2019",
+  "CALI Excellence for the Future Award, Juvenile Law", "University of Nebraska College of Law", "Lincoln, NE", "2019",
+  "CALI Excellence for the Future Award, Legal Profession", "University of Nebraska College of Law", "Lincoln, NE", "2019",
+  "Conference Student Travel Award", "AP-LS, APA Division 41", "", "2015",
+  "Distinction in the Senior Thesis Exercise", "Pomona College Psychology Department", "Claremont, CA", "2014",
+  "Senior Service Award", "Pomona College", "Claremont, CA", "2014",
+  "Student Travel Grant", "Pomona College Psychology Department", "Claremont, CA", "2014",
+  "Pomona College Scholar", "Pomona College", "Claremont, CA", "2012 - 2014"
+)
+
+awards |>
+  resume_entry(
+    title = "title",
+    location = "location",
+    date = "date",
+    description = "organization"
+  )
+```

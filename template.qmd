@@ -1,0 +1,232 @@
+---
+title: "CV"
+author:
+ firstname: Emma
+ lastname: "W. Marshall"
+ address: "3303 Orchard Street Apt. A, Lincoln, NE 68503"
+ position: "Ph.D. Candidate in Social and Cognitive Psychology"
+ contacts:
+   - icon: fa envelope
+     text: emmarshall47@pm.me
+     url: "mailto:emmarshall47@pm.me"
+   - icon: fa phone
+     text: "(571) 594-2853"
+     url: "tel:+15715942853"
+   - icon: fa globe
+     text: emmawmarshall.com
+     url: "https://www.emmawmarshall.com"
+brand:
+ typography:
+   fonts:
+     - family: Sora
+       source: google
+       weight: [400, 600, 700]
+       style: [normal]
+     - family: IBM Plex Sans
+       source: google
+       weight: [400, 500, 600, 700]
+       style: [normal, italic]
+   base: IBM Plex Sans
+ color:
+   primary: "#d00000"
+   link: "#202b47"
+ defaults:
+   awesomecv-typst:
+     font-header: Sora
+format:
+ awesomecv-typst: default
+bibliography: cv-references.bib
+csl: apa-cv.csl
+highlight-author: "Marshall, E. W."
+suppress-bibliography: true
+execute:
+ echo: false
+---
+```{r}
+#| label: setup
+#| include: false
+
+library(apatypstcv)
+
+load("cv_data.rda")
+```
+
+# Education
+```{r}
+#| label: education
+#| output: asis
+
+education_entry(cv_data$education)
+```
+
+# Professional Experience
+```{r}
+#| label: professional-experience
+#| output: asis
+
+resume_entry(
+  cv_data$prof_exp,
+  title = "title",
+  location = "location",
+  date = "date",
+  description = "organization",
+  description_url = "organization_url",
+  description2 = "description"
+)
+```
+
+\newpage
+
+# Teaching Experience
+```{r}
+#| label: teaching
+#| output: asis
+
+teaching_entry(
+ cv_data$teaching,
+ institution_url = "institution_url",
+ links = list(c("website", "globe"), c("syllabus", "file-pdf"))
+)
+```
+
+# Selected Workshops and Guest Lectures
+```{r}
+#| label: workshops
+#| output: asis
+
+workshop_entry(
+ cv_data$workshops,
+ venue_url = "venue_url",
+ links = list(c("website", "globe"), c("slides", "file-powerpoint"))
+)
+```
+
+# Publications
+
+::: {.apa-bib}
+[@brank2022privacy]
+
+[@marshall2019police]
+
+[@brank2019sniffer]
+:::
+
+# Manuscripts in Preparation and Under Review
+
+::: {.apa-bib}
+[@hoetger2026bright]
+
+[@hazen2026oneperson]
+
+[@groscup2026objectively]
+
+[@marshall2026igot99]
+
+[@marshall2026workemail]
+
+[@brank2026callme]
+:::
+
+# Presentations
+
+::: {.apa-bib mentee-note="true"}
+[@bohls2026parents_ai]
+
+[@marshall2025suffrage_lsa]
+
+[@marshall2024electoral]
+
+[@marshall2024hindsight]
+
+[@guzman2024archival]
+
+[@mccracken2022reforming]
+
+[@hazen2020trust]
+
+[@hazen2020voice]
+
+[@wilson2020socialsupport]
+
+[@wilson2020socialsupport_unl]
+
+[@hazen2019electoral]
+
+[@buhr2019consent]
+
+[@marshall2019innocence]
+
+[@brank2018smartphone]
+
+[@groscup2018talksweet]
+
+[@brank2018touchme]
+
+[@marshall2018postsnowden]
+
+[@marshall2017k9]
+
+[@mcgarry2017knocking]
+
+[@marshall2016brightlights]
+
+[@marshall2015facebook_apa]
+
+[@marshall2015cloud]
+
+[@marshall2015facebook_apls]
+
+[@marshall2015experiences]
+
+[@groscup2015nsa]
+
+[@marshall2015smartphone]
+
+[@gold2015race]
+
+[@marshall2014workemail]
+
+[@deo2014searchseizure]
+:::
+
+# Professional Service
+```{r}
+#| label: service
+#| output: asis
+
+date_first_entry(
+ cv_data$service,
+ date = "date",
+ title = "title",
+ description = "organization",
+ description_url = "organization_url"
+)
+```
+
+# Professional Memberships
+```{r}
+#| label: memberships
+#| output: asis
+
+date_first_entry(
+ cv_data$memberships,
+ date = "date",
+ title = "title",
+ title_url = "title_url",
+ description = "description"
+)
+```
+
+# Professional Honors and Awards
+```{r}
+#| label: awards
+#| output: asis
+
+date_first_entry(
+  cv_data$awards,
+  date = "date",
+  title = "title",
+  description = "organization",
+  description_url = "organization_url"
+)
+```
